@@ -17,6 +17,8 @@ code {
   display: flex;
   justify-content: center;
   margin: 0 auto;
+  flex-direction: column;
+  padding-top: 10px;
 }
 
 .Message {
@@ -24,4 +26,20 @@ code {
   color: #fff;
   background-color: #58b666;
   border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.MessagePanel > label {
+  display: block;
+  margin: 5px 0;
+}
+
+.MessageAuthor {
+  font-size: 10px;
+  color: #eee;
+}
+
+.MessageText {
+  font-size: 14px;
+  margin: 0;
 }
