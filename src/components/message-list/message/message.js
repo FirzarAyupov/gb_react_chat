@@ -10,7 +10,8 @@ export function Message({ message }) {
     >
       <h3>{message.author}</h3>
       <p>{message.text}</p>
-      <p>{message.date}</p>
+      <p>date</p>
+      <p>{/*message.date*/}</p>
     </div>
   );
 }
