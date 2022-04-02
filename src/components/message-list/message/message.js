@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import cls from "classnames";
 import styles from "./message.module.css";
 
@@ -9,8 +10,8 @@ export function Message({ message }) {
       })}
     >
       <h3>{message.author}</h3>
-      <p>{message.text}</p>
-      <p>{message.date}</p>
+      <p>{message.message}</p>
+      <p>{format(message.date, "yyyy-MM-dd HH:mm:ss")}</p>
     </div>
   );
 }
