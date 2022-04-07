@@ -1,8 +1,4 @@
-import {
-  UPDATE_PROFILE,
-  TOGGLE_VISIBLE_PROFILE,
-  CHECKED_CHECKBOX_PROFILE,
-} from "./types";
+import { UPDATE_PROFILE, TOGGLE_VISIBLE_PROFILE } from "./types";
 
 export const updateProfile = (profile) => {
   console.log("profile: ", profile);
@@ -11,7 +7,4 @@ export const updateProfile = (profile) => {
 
 export const toggleVisibleProfile = () => {
   return { type: TOGGLE_VISIBLE_PROFILE };
-};
-export const checkedCheckboxProfile = () => {
-  return { type: CHECKED_CHECKBOX_PROFILE };
 };

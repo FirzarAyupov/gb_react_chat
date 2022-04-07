@@ -1,78 +1,36 @@
 import { useSelector, useDispatch } from "react-redux";
-import {
-  checkedCheckboxProfile,
-  toggleVisibleProfile,
-  updateProfile,
-} from "../store/profile";
-import {
-  FormGroup,
-  ToggleButton,
-  FormControlLabel,
-  Checkbox,
-  Input,
-  Button,
-} from "@mui/material/";
-import { useState } from "react";
+import { toggleVisibleProfile } from "../store/profile";
+import { ProfileForm } from "../components";
 
 export const ProfilePage = () => {
   const dispatch = useDispatch();
-  const { firstName, lastName, isVisibleProfile, isCheckedCheckbox } =
-    useSelector((state) => state.profile);
-
-  const [value, setValue] = useState({
-    firstName: firstName,
-    lastName: lastName,
-  });
-
-  function handleFirstNameChange(e) {
-    setValue({ ...value, firstName: e.target.value });
-  }
-
-  function handleLastNameChange(e) {
-    setValue({ ...value, lastName: e.target.value });
-  }
+  const { firstName, lastName, isVisibleProfile, phone } = useSelector(
+    (state) => state.profile
+  );
 
   return (
     <div>
-      <h1>Profile page</h1>
-      <ToggleButton
-        value="Toggle"
-        onClick={() => dispatch(toggleVisibleProfile())}
-      >
-        Toggle
-      </ToggleButton>
+      <h1>ProfilePage</h1>
+      <button onClick={() => dispatch(toggleVisibleProfile())}>
+        toggle profile visible
+      </button>
+
       {isVisibleProfile && (
         <>
-          <FormGroup>
-            <h3>
-              firstName:{" "}
-              <Input
-                defaultValue={value.firstName}
-                onChange={handleFirstNameChange}
-              />
-            </h3>
-            <h3>
-              lastName:{" "}
-              <Input
-                defaultValue={value.lastName}
-                onChange={handleLastNameChange}
-              />
-            </h3>
-
-            <FormControlLabel
-              control={<Checkbox checked={isCheckedCheckbox} />}
-              label="Checked"
-              onChange={() => dispatch(checkedCheckboxProfile())}
-            />
-          </FormGroup>
-          <Button
-            variant="contained"
-            onClick={() => dispatch(updateProfile(value))}
-          >
-            Сохранить
-          </Button>
+          <h3>
+            firstName: <span>{firstName}</span>
+          </h3>
+          <h3>
+            lastName: <span>{lastName}</span>
+          </h3>
+          <h3>
+            phone: <span>{phone}</span>
+          </h3>
         </>
       )}
+
+      <hr />
+      <ProfileForm firstName={firstName} lastName={lastName} phone={phone} />
     </div>
   );
 };

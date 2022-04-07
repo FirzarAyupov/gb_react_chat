@@ -1,12 +1,8 @@
-import {
-  UPDATE_PROFILE,
-  TOGGLE_VISIBLE_PROFILE,
-  CHECKED_CHECKBOX_PROFILE,
-} from "./types";
+import { UPDATE_PROFILE, TOGGLE_VISIBLE_PROFILE } from "./types";
 
 const initialState = {
   isVisibleProfile: true,
-  isCheckedCheckbox: false,
+  isAdminProfile: false,
   firstName: "firstName",
   lastName: "lastName",
 };
@@ -14,15 +10,13 @@ const initialState = {
 export const profileReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_PROFILE:
+      console.log(action);
       return {
         ...state,
-        firstName: action.payload.firstName,
-        lastName: action.payload.lastName,
+        ...action.payload,
       };
     case TOGGLE_VISIBLE_PROFILE:
       return { ...state, isVisibleProfile: !state.isVisibleProfile };
-    case CHECKED_CHECKBOX_PROFILE:
-      return { ...state, isCheckedCheckbox: !state.isCheckedCheckbox };
     default:
       return state;
   }

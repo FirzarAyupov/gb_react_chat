@@ -1,76 +1,55 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Input, InputAdornment } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import { useStyles } from "./use-styles";
 import { Message } from "./message/message";
 import { useParams } from "react-router-dom";
+import { sendMessage } from "../../store/messages";
 
 export function MessageList() {
   const ref = useRef();
   const { roomId } = useParams();
+  const dispatch = useDispatch();
 
-  const [value, setValue] = useState("");
-  const [messageList, setMessageList] = useState({
-    room1: [
-      {
-        author: "Bot",
-        message: "message Bot",
-        date: new Date(),
-      },
-    ],
+  const messages = useSelector((state) => {
+    return state.messages.messages[roomId] ?? [];
   });
 
-  // useEffect(() => {
-  //   if (ref.current) {
-  //     ref.current.scrollTo(0, ref.current.scrollHeight);
-  //   }
-  // }, [messageList]);
-
-  const messages = messageList[roomId] ?? [];
+  const [value, setValue] = useState("");
 
   const styles = useStyles();
 
-  const sendMessage = useCallback(
+  const send = useCallback(
     (message, author = "User") => {
       if (message) {
-        setMessageList({
-          ...messageList,
-          [roomId]: [
-            ...(messageList[roomId] ?? []),
-            {
-              author,
-              message,
-              date: new Date(),
-            },
-          ],
-        });
+        dispatch(sendMessage(roomId, { author: author || "Bot", message }));
         setValue("");
       }
     },
-    [messageList, roomId]
+    [roomId, dispatch]
   );
 
   const handlePressInput = ({ code }) => {
     if (code === "Enter") {
-      sendMessage(value);
+      send(value);
     }
   };
 
   useEffect(() => {
-    const messages = messageList[roomId] ?? [];
     const lastMessage = messages[messages.length - 1];
     let timerId = null;
 
     if (messages.length && lastMessage.author === "User") {
       timerId = setTimeout(() => {
-        sendMessage("Hello from Bot", "Bot");
+        send("Hello from Bot", "Bot");
       }, 500);
     }
 
     return () => {
       clearInterval(timerId);
     };
-  }, [messageList, roomId, sendMessage]);
+  }, [messages, roomId, send]);
 
   return (
     <>
@@ -90,10 +69,7 @@ export function MessageList() {
         endAdornment={
           <InputAdornment position="end">
             {value && (
-              <Send
-                className={styles.icon}
-                onClick={() => sendMessage(value)}
-              />
+              <Send className={styles.icon} onClick={() => send(value)} />
             )}
           </InputAdornment>
         }
