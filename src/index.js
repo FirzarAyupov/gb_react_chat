@@ -5,20 +5,23 @@ import "./global.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProfilePage, ChatPage } from "./pages";
 import { Header } from "./components";
-import { store } from "./store";
+import { store, persistor } from "./store";
+import { PersistGate } from "redux-persist/integration/react";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<h1>Home page</h1>} />
-          <Route path="/profile" element={<ProfilePage />}></Route>
-          <Route path="/chat/*" element={<ChatPage />}></Route>
-          <Route path="*" element={<h1>404</h1>}></Route>
-        </Routes>
-      </BrowserRouter>
+      <PersistGate persistor={persistor}>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path="/" element={<h1>Home page</h1>} />
+            <Route path="/profile" element={<ProfilePage />}></Route>
+            <Route path="/chat/*" element={<ChatPage />}></Route>
+            <Route path="*" element={<h1>404</h1>}></Route>
+          </Routes>
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")

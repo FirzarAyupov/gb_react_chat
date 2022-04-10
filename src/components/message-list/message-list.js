@@ -5,7 +5,8 @@ import { Send } from "@mui/icons-material";
 import { useStyles } from "./use-styles";
 import { Message } from "./message/message";
 import { useParams } from "react-router-dom";
-import { sendMessage } from "../../store/messages";
+import { sendMessageWithBot, messagesSelector } from "../../store/messages";
+import { usePrevios } from "../../hooks/use-previos";
 
 export function MessageList() {
   const ref = useRef();
@@ -20,10 +21,17 @@ export function MessageList() {
 
   const styles = useStyles();
 
+  const previosMessagesLength = usePrevios(messages.length);
+
   const send = useCallback(
     (message, author = "User") => {
       if (message) {
-        dispatch(sendMessage(roomId, { author: author || "Bot", message }));
+        dispatch(
+          sendMessageWithBot(roomId, {
+            author: author || "Bot",
+            message,
+          })
+        );
         setValue("");
       }
     },
@@ -37,10 +45,19 @@ export function MessageList() {
   };
 
   useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTo(0, ref.current.scrollHeight);
+    }
+  }, [messages]);
+
+  useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     let timerId = null;
 
-    if (messages.length && lastMessage.author === "User") {
+    if (
+      messages.length > previosMessagesLength &&
+      lastMessage.author === "User"
+    ) {
       timerId = setTimeout(() => {
         send("Hello from Bot", "Bot");
       }, 500);
@@ -49,13 +66,13 @@ export function MessageList() {
     return () => {
       clearInterval(timerId);
     };
-  }, [messages, roomId, send]);
+  }, [messages, roomId, send, previosMessagesLength]);
 
   return (
     <>
       <div ref={ref}>
         {messages.map((message, index) => (
-          <Message message={message} key={message.date} />
+          <Message message={message} key={message.id} roomId={roomId} />
         ))}
       </div>
 
