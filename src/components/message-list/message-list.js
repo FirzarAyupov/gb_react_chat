@@ -1,19 +1,48 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Input, InputAdornment } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import { useStyles } from "./use-styles";
 import { Message } from "./message/message";
+import { useParams } from "react-router-dom";
+import { sendMessageWithBot, messagesSelector } from "../../store/messages";
+import { usePrevios } from "../../hooks/use-previos";
 
 export function MessageList() {
   const ref = useRef();
+  const { roomId } = useParams();
+  const dispatch = useDispatch();
+
+  const messages = useSelector((state) => {
+    return state.messages.messages[roomId] ?? [];
+  });
+
   const [value, setValue] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      author: "Bot",
-      text: "message1",
-      date: new Date().toLocaleDateString(),
+
+  const styles = useStyles();
+
+  const previosMessagesLength = usePrevios(messages.length);
+
+  const send = useCallback(
+    (message, author = "User") => {
+      if (message) {
+        dispatch(
+          sendMessageWithBot(roomId, {
+            author: author || "Bot",
+            message,
+          })
+        );
+        setValue("");
+      }
     },
-  ]);
+    [roomId, dispatch]
+  );
+
+  const handlePressInput = ({ code }) => {
+    if (code === "Enter") {
+      send(value);
+    }
+  };
 
   useEffect(() => {
     if (ref.current) {
@@ -21,75 +50,47 @@ export function MessageList() {
     }
   }, [messages]);
 
-  const styles = useStyles();
-
-  const sendMessage = () => {
-    if (value) {
-      setMessages([
-        ...messages,
-        { author: "User", text: value, date: new Date().toLocaleDateString() },
-      ]);
-      setValue("");
-    }
-  };
-
-  const handlePressInput = ({ code }) => {
-    if (code === "Enter") {
-      sendMessage();
-    }
-  };
-
   useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessagesAuthor = messages[messages.length - 1].author;
-      let timerId = null;
+    const lastMessage = messages[messages.length - 1];
+    let timerId = null;
 
-      if (lastMessagesAuthor === "User") {
-        timerId = setTimeout(() => {
-          setMessages([
-            ...messages,
-            {
-              author: "Bot",
-              text: "Message from bot",
-              date: new Date().toLocaleDateString(),
-            },
-          ]);
-        }, 500);
-      }
-
-      return () => {
-        clearInterval(timerId);
-      };
+    if (
+      messages.length > previosMessagesLength &&
+      lastMessage.author === "User"
+    ) {
+      timerId = setTimeout(() => {
+        send("Hello from Bot", "Bot");
+      }, 500);
     }
-  }, [messages]);
+
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [messages, roomId, send, previosMessagesLength]);
 
   return (
-    <div>
-      <div>
-        <div>
-          {messages.map((message) => (
-            <Message message={message} key={message.date} />
-          ))}
-        </div>
-        <Input
-          id="outlined-basic"
-          label="Автор:"
-          variant="outlined"
-          className={styles.input}
-          placeholder="Введите сообщение ..."
-          type="text"
-          autoFocus={true}
-          fullWidth
-          endAdornment={
-            <InputAdornment position="end">
-              {value && <Send className={styles.icon} onClick={sendMessage} />}
-            </InputAdornment>
-          }
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyPress={handlePressInput}
-        />
+    <>
+      <div ref={ref}>
+        {messages.map((message, index) => (
+          <Message message={message} key={message.id} roomId={roomId} />
+        ))}
       </div>
-    </div>
+
+      <Input
+        placeholder="Введите сообщение ..."
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyPress={handlePressInput}
+        className={styles.input}
+        fullWidth
+        endAdornment={
+          <InputAdornment position="end">
+            {value && (
+              <Send className={styles.icon} onClick={() => send(value)} />
+            )}
+          </InputAdornment>
+        }
+      />
+    </>
   );
 }
