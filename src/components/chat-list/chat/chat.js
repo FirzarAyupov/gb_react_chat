@@ -1,8 +1,9 @@
 //import styles from "./chat.module.css";
-import { ListItemButton, ListItem, ListItemText } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { ListItemButton, ListItemText } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import st from "./chat.module.css";
+import { useSelector } from "react-redux";
+import { lastMessageSelector } from "../../../store/messages/selectors";
 
 const useStyles = makeStyles(() => {
   return {
@@ -17,18 +18,22 @@ const useStyles = makeStyles(() => {
   };
 });
 
-export function Chat({ title, selected, handleListItemClick }) {
+export function Chat({ title, selected }) {
   const styles = useStyles();
+  const message = useSelector(lastMessageSelector(title));
+
   return (
-    <ListItemButton
-      onClick={handleListItemClick}
-      className={styles.item}
-      selected={selected}
-    >
-      <ListItem>
-        <AccountCircle fontSize="large" className={st.icon} />
-      </ListItem>
-      <ListItemText primary={title} className={st.text} />
+    <ListItemButton className={styles.item} selected={selected}>
+      <div className={st.wrapper}>
+        <ListItemText primary={title} className={st.text} />
+
+        {message && (
+          <ListItemText>
+            <ListItemText primary={message.author} className={st.text} />
+            <ListItemText primary={message.message} className={st.text} />
+          </ListItemText>
+        )}
+      </div>
     </ListItemButton>
   );
 }
