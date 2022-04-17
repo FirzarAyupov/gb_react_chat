@@ -11,7 +11,7 @@ import {
 export function ChatList() {
   const { roomId } = useParams();
   const dispatch = useDispatch();
-  const conversation = useSelector(conversationsSelector);
+  const { conversation, pending } = useSelector(conversationsSelector);
   const navigate = useNavigate();
 
   const create = () => {
@@ -31,6 +31,9 @@ export function ChatList() {
     navigate("/chat");
   };
 
+  if (pending) {
+    return <h1>pending...</h1>;
+  }
   return (
     <List component="nav">
       <Button onClick={create}>Создать комнату</Button>

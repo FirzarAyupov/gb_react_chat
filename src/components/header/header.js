@@ -10,15 +10,22 @@ import {
   Box,
   AppBar,
 } from "@mui/material";
+import { signOut } from "firebase/auth";
+import { auth } from "../../api/firebase";
 
-const menu = [
+const menuWithSession = [
   { title: "Home", to: "/" },
   { title: "Profile", to: "/profile" },
   { title: "Chat", to: "/chat" },
   { title: "Gists", to: "/gists" },
 ];
 
-export function Header() {
+const menuWithoutSession = [
+  { title: "Login", to: "/login" },
+  { title: "sign-up", to: "/sign-up" },
+];
+
+export function Header({ session }) {
   return (
     <AppBar position="static" color="primary" className={styles.appBar}>
       <Container maxWidth="xl">
@@ -32,18 +39,37 @@ export function Header() {
             LOGO
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: "flex" }}>
-            {menu.map((item) => (
-              <Button
-                key={item.to}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <Link to={item.to} className={styles.link}>
-                  {item.title}
-                </Link>
-              </Button>
-            ))}
-          </Box>
+          {!!session && (
+            <Box sx={{ flexGrow: 1, display: "flex" }}>
+              {menuWithSession.map((item) => (
+                <Button
+                  key={item.to}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  <Link to={item.to} className={styles.link}>
+                    {item.title}
+                  </Link>
+                </Button>
+              ))}
+            </Box>
+          )}
+
+          {!!session && <button onClick={() => signOut(auth)}>out</button>}
+
+          {!session && (
+            <Box sx={{ flexGrow: 1, display: "flex" }}>
+              {menuWithoutSession.map((item) => (
+                <Button
+                  key={item.to}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  <Link to={item.to} className={styles.link}>
+                    {item.title}
+                  </Link>
+                </Button>
+              ))}
+            </Box>
+          )}
 
           <Box sx={{ flexGrow: 0 }}>
             <IconButton sx={{ p: 0 }}>

@@ -5,7 +5,7 @@ import { Send } from "@mui/icons-material";
 import { useStyles } from "./use-styles";
 import { Message } from "./message/message";
 import { useParams } from "react-router-dom";
-import { sendMessageWithBot, messagesSelector } from "../../store/messages";
+import { createMessageFb } from "../../store/messages";
 import { usePrevios } from "../../hooks/use-previos";
 
 export function MessageList() {
@@ -27,7 +27,7 @@ export function MessageList() {
     (message, author = "User") => {
       if (message) {
         dispatch(
-          sendMessageWithBot(roomId, {
+          createMessageFb(roomId, {
             author: author || "Bot",
             message,
           })

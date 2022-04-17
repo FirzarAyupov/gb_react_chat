@@ -1,3 +1,3 @@
 export const conversationsSelector = (state) => {
-  return state.conversation.conversation;
+  return state.conversation;
 };
