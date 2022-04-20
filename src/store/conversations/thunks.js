@@ -2,6 +2,9 @@ import {
   getConversationSucces,
   getConversationStart,
   getConversationError,
+  createConversationStart,
+  createConversationSucces,
+  createConversationError,
 } from "./actions";
 
 export const getConversation = (page) => async (dispatch, _, api) => {
@@ -21,3 +24,14 @@ export const getConversation = (page) => async (dispatch, _, api) => {
     dispatch(getConversationError(e));
   }
 };
+
+export const createConversationFB =
+  (conversation) => async (dispatch, _, api) => {
+    try {
+      dispatch(createConversationStart());
+      await api.createConversationApi(conversation);
+      dispatch(createConversationSucces(conversation));
+    } catch (e) {
+      createConversationError(e);
+    }
+  };

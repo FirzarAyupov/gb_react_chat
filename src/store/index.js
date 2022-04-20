@@ -4,7 +4,10 @@ import { conversationReducer } from "./conversations";
 import { messagesReducer } from "./messages";
 import { gistReducer } from "./gists";
 import { getPublicGistsApi, searchGistsByNameApi } from "../api/gists";
-import { getConversationApi } from "../api/conversations";
+import {
+  getConversationApi,
+  createConversationApi,
+} from "../api/conversations";
 import { getMessagesApi, createMessageApi } from "../api/messages";
 import { logger, botMessage, timeScheduler } from "./middlewares";
 import thunk from "redux-thunk";
@@ -17,6 +20,7 @@ const apis = {
   getConversationApi,
   getMessagesApi,
   createMessageApi,
+  createConversationApi,
 };
 
 const persistConfig = {
